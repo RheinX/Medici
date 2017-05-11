@@ -181,6 +181,43 @@ class User_Controller extends CI_Controller  {
 
         echo json_encode($result);
     }
+
+    //mark one book
+    public function Mark_Book($BookId){
+        $data['WechatId']=$this->input->post("WechatId");
+        $data['score']=$this->input->post("score");
+        $data['BookId']=$BookId;
+
+        //judge if user has the power too mark
+        $canMark=$this->User_model->Is_User_Watch_Book($data);
+
+        if(!$canMark['result']){
+            $result['result']=false;
+            $result['ErrorMessage']="您必须看过此书后才能打分!";
+            echo json_encode($result);
+            return;
+        }
+
+        //mark it
+        $result['result']=$this->Book_model->Mark_Book($data);
+
+        if(!$result['result'])
+            $result['ErrorMessage']="Unknown Error";
+
+        echo json_encode($result);
+    }
+
+
+    //get the hot search
+    public function Get_Hot_Search($num){
+        $data=$this->User_model->Get_Hot_Search($num);
+
+        $result=[];
+        foreach ($data as $key=>$value){
+            array_push($result,$value['Keyword']);
+        }
+        echo json_encode($result);
+    }
 }
 
 

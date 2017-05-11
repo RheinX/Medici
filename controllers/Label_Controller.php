@@ -11,6 +11,7 @@ class Label_Controller extends CI_Controller{
         parent::__construct();
         $this->load->helper('url');
         $this->load->model('Label_model');
+        $this->load->model('Book_model');
         $this->output->set_header('Content-Type: application/json; charset=utf-8');
     }
 
@@ -52,6 +53,23 @@ class Label_Controller extends CI_Controller{
         $data['Id']=$Id;
 
         $books=$this->Label_model->Get_Label_Of_Book($data);
+
+        //get the numbe of  comments of book
+        foreach ($books as $key=>$value){
+            //number of comments
+            $comment_number=$this->Book_model->Get_Number_Comment_Book($value);
+            $books[$key]['numberComment']=$comment_number;
+
+            //author
+            $author=$this->Book_model->Get_Author_Of_Book($value);
+            //$books[$key]['author']=$author;
+            $books[$key]['author']=[];
+            foreach ($author as $k=>$v){
+                array_push($books[$key]['author'],$v['Name']);
+                //$books[$key]['author']=$v['Name'];
+            }
+
+        }
 
         echo json_encode($books);
     }
